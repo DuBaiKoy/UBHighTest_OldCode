@@ -1,0 +1,18 @@
+dim abc = "0"
+TracePrint abc
+Try
+    abc = "1"
+    sRet = Dialog.InputBox("","UiBot","",false)
+    //sret1 = CInt(sret)
+    sret2 = 2+sret
+    TracePrint sret2
+    TracePrint abc
+Catch a
+    abc = "2"
+    TracePrint a
+    TracePrint abc
+End Try
+
+TracePrint abc
+
+

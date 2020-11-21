@@ -1,0 +1,275 @@
+/*
+作者:独白KOY
+创建时间:2020-09-01
+本流程块用于实现到东方航空和南方航空采集所需信息并保存至Excel里的功能，对应设计步骤如下：
+1.	打开东方航空采集数据保存至excel
+2.	打开南方航空采集数据保存至excel
+*/
+
+//变量区
+dim json_data = self.input  //接收数据
+dim tomorrow = Time.Format(Time.DateAdd("d",1,Time.Now()),"yyyy-mm-dd") //格式化明天的时间字符串
+dim time_format = "yyyy-MM-dd HH:mm:ss" //时间格式
+dim 用户名 = json_data["用户名"]    //把接收到的用户名数据储存到对应变量中
+dim 密码 = json_data["密码"]    //把接收到的密码数据储存到对应变量中
+dim objExcelWorkBook = ''   //创建excel变量
+dim hWeb = ''   //创建web变量
+dim isSuccess = False
+
+
+//函数区
+/*
+功能：通过传入的浏览器对象打开南方航空采集信息写入到excel对象中
+入参：浏览器对象，excel对象
+*/
+Function 查询南方航空(hWeb,objExcelWorkBook)
+    //将需要判断的元素保存为局部变量    
+    Dim 低价日历 = '{"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"DIV","parentid":"zls-common","css-selector":"body>div>div>div>div>div","idx":7}]}'
+
+    //浏览器打开南方航空的链接
+    WebBrowser.GoURL(hWeb,json_data["南方航空"],true,"",30000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200})
+    //设置出发地
+    #icon("@res:tsb7iteh-gkjd-d588-q1m4-ev0uko5rmqv2.png")
+    UiElement.SetValue({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"INPUT","id":"fDepCity"}]},json_data["出发地"],{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200})
+    #icon("@res:kscgrqdi-d7qf-g37g-7d7n-hav7qoff2lfd.png")
+    Mouse.Action({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"A","parentid":"commonbox","aaname":"单程"}]},"left","click",10000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"bSetForeground":true,"sCursorPosition":"Center","iCursorOffsetX":0,"iCursorOffsetY":0,"sKeyModifiers":[],"sSimulate":"simulate"})
+    //设置目的地
+    #icon("@res:tje9ijdh-2vok-mpls-m2l6-d0taq6fb3foj.png")
+    UiElement.SetValue({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"INPUT","id":"fArrCity"}]},json_data["到达地"],{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200})
+    #icon("@res:kscgrqdi-d7qf-g37g-7d7n-hav7qoff2lfd.png")
+    Mouse.Action({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"A","parentid":"commonbox","aaname":"单程"}]},"left","click",10000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"bSetForeground":true,"sCursorPosition":"Center","iCursorOffsetX":0,"iCursorOffsetY":0,"sKeyModifiers":[],"sSimulate":"simulate"})
+    //设置日期
+    #icon("@res:aeg2vv8n-qaua-i6lj-jj8c-ohpkshrp6rfq.png")
+    UiElement.SetValue({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"INPUT","id":"fDepDate"}]},tomorrow,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200})
+    #icon("@res:kscgrqdi-d7qf-g37g-7d7n-hav7qoff2lfd.png")
+    Mouse.Action({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"A","parentid":"commonbox","aaname":"单程"}]},"left","click",10000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"bSetForeground":true,"sCursorPosition":"Center","iCursorOffsetX":0,"iCursorOffsetY":0,"sKeyModifiers":[],"sSimulate":"simulate"})
+    //点击确定按钮
+    #icon("@res:30ah5uco-41lb-ftnp-aq5r-1sc0splo471c.png")
+    Mouse.Action({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"A","parentid":"commonbox","aaname":" 立即查询 "}]},"left","click",10000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"bSetForeground":true,"sCursorPosition":"Center","iCursorOffsetX":0,"iCursorOffsetY":0,"sKeyModifiers":[],"sSimulate":"simulate"})
+    //判断元素是否加载完成
+    判断元素是否加载完成(低价日历)
+    Delay(2000)
+    //点击价格排序
+    #icon("@res:qffc7emb-hir1-equr-59er-slnfece9neie.png")
+    Mouse.Action({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"SPAN","parentid":"zls-common","aaname":"经济舱"}]},"left","click",10000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"bSetForeground":true,"sCursorPosition":"Center","iCursorOffsetX":0,"iCursorOffsetY":0,"sKeyModifiers":[],"sSimulate":"simulate"})
+    Log.Info(Time.Format(Time.Now(),time_format)&" ：开始采集南方航空的航班信息...")
+    Dialog.Notify("开始采集南方航空的航班信息...", "提示", "0")
+    Delay(2000)
+    //抓取数据
+    ary_data = UiElement.DataScrap({"html":[{"id":"zls-common","tag":"DIV"}],"wnd":[{"app":"chrome","cls":"Chrome_WidgetWin_1","title":"*"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}]},{"Columns":[{"props":["text"],"selecors":[{"className":"zls-flightInfoShow","index":0,"prefix":"","tag":"div","value":"div.zls-flightInfoShow"},{"className":"zls-flight","index":0,"prefix":">","tag":"div","value":"div.zls-flight"},{"className":"zls-flg-ui","index":0,"prefix":">","tag":"ul","value":"ul.zls-flg-ui"},{"index":0,"prefix":">","tag":"li","value":"li"},{"className":"fligthL","index":0,"prefix":">","tag":"div","value":"div.fligthL"},{"className":"zls-flgno","index":0,"prefix":">","tag":"div","value":"div.zls-flgno"},{"className":"zls-flgno-info zh","index":0,"prefix":">","tag":"div","value":"div.zls-flgno-info.zh"}]},{"props":["text"],"selecors":[{"className":"zls-flightInfoShow","index":0,"prefix":"","tag":"div","value":"div.zls-flightInfoShow"},{"className":"zls-flight","index":0,"prefix":">","tag":"div","value":"div.zls-flight"},{"className":"zls-flg-ui","index":0,"prefix":">","tag":"ul","value":"ul.zls-flg-ui"},{"index":0,"prefix":">","tag":"li","value":"li"},{"className":"fligthL","index":0,"prefix":">","tag":"div","value":"div.fligthL"},{"className":"zls-flgtime zls-flgtime-r zls-flgtime-dep","index":0,"prefix":">","tag":"div","value":"div.zls-flgtime.zls-flgtime-r.zls-flgtime-dep"}]},{"props":["text"],"selecors":[{"className":"zls-flightInfoShow","index":0,"prefix":"","tag":"div","value":"div.zls-flightInfoShow"},{"className":"zls-flight","index":0,"prefix":">","tag":"div","value":"div.zls-flight"},{"className":"zls-flg-ui","index":0,"prefix":">","tag":"ul","value":"ul.zls-flg-ui"},{"index":0,"prefix":">","tag":"li","value":"li"},{"className":"fligthL","index":0,"prefix":">","tag":"div","value":"div.fligthL"},{"className":"zls-flgtime zls-flgtime-arr","index":0,"prefix":">","tag":"div","value":"div.zls-flgtime.zls-flgtime-arr"}]},{"props":["text"],"selecors":[{"className":"zls-flightInfoShow","index":0,"prefix":"","tag":"div","value":"div.zls-flightInfoShow"},{"className":"zls-flight","index":0,"prefix":">","tag":"div","value":"div.zls-flight"},{"className":"zls-flg-ui","index":0,"prefix":">","tag":"ul","value":"ul.zls-flg-ui"},{"index":0,"prefix":">","tag":"li","value":"li"},{"className":"fligthR","index":0,"prefix":">","tag":"div","value":"div.fligthR"},{"className":"","index":0,"prefix":">","tag":"ul","value":"ul"},{"className":"zls-cabin-cell","index":4,"prefix":">","tag":"li","value":"li:nth-child(4)"}]}],"ExtractTable":0},{"objNextLinkElement":"","iMaxNumberOfPage":5,"iMaxNumberOfResult":-1,"iDelayBetweenMS":1000,"bContinueOnError":false})
+
+    //数据处理
+    dim j = 1
+    For Each row_data In ary_data
+        //TracePrint "第"&j&"班："
+        data_0 = split(row_data[0],"\n")
+        data_0_0 = split(data_0[0]," ")
+        data_1 = Split(row_data[1],"\n")  
+        data_2 = Split(row_data[2],"\n")
+        data_2_0 = Split(data_2[0],"+")
+        data_3 = Split(row_data[3],"\n")
+
+        航空公司 = "南方航空"
+        航班号 = data_0_0[0]
+        价格 = data_3[0]
+        出发时间 = bind_time(data_1[0],1)
+        出发机场 = data_1[1]
+        If len(data_2_0) = 1 
+            到达时间 = bind_time(data_2_0[0],1)
+        elseif len(data_2_0) = 2
+            到达时间 = bind_time(data_2_0[0],2)
+        End If
+        到达机场 = data_2[1]
+        当地天气 = 查询北京天气()
+        //TracePrint "\n航空公司：南方航空\n航班号："&航班号&"\n价格："&价格&"\n出发时间："&出发时间&"\n出发机场："&出发机场&"\n到达时间："&到达时间&"\n到达机场："&到达机场&"\n当地天气："&当地天气
+        //填入excel
+        row_num = Excel.GetRowsCount(objExcelWorkBook,0)
+        Excel.WriteRow(objExcelWorkBook,0,"B"&row_num+1,[航空公司,航班号,出发时间,到达时间,价格,出发机场,到达机场,当地天气,用户名,密码],false)
+        j = j + 1
+    Next
+End Function
+
+/*
+功能：通过传入的浏览器对象打开东方航空采集信息写入到excel对象中
+入参：浏览器对象，exce对象
+*/
+Function 查询东方航空(hWeb,objExcelWorkBook)
+    iRet = WebBrowser.GoURL(hWeb,json_data["东方航空"],true,"",30000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200})
+    //出发地
+    #icon("@res:eh9ggs84-vo7t-s731-osn2-pnssn088giqb.png")
+    UiElement.SetValue({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"INPUT","id":"label_ID_0"}]},json_data["出发地"],{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200})
+    #icon("@res:27teoog7-pq3d-rutc-goka-eck2eoniqts8.png")
+    Mouse.Action({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"DT","parentid":"trip"}]},"left","click",10000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"bSetForeground":true,"sCursorPosition":"TopLeft","iCursorOffsetX":0,"iCursorOffsetY":0,"sKeyModifiers":[],"sSimulate":"simulate"})
+    //到达地
+    #icon("@res:umf1q24g-hnb6-p3hp-ivel-2krsrhr5c58n.png")
+    UiElement.SetValue({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"INPUT","id":"label_ID_1"}]},json_data["到达地"],{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200})
+    #icon("@res:27teoog7-pq3d-rutc-goka-eck2eoniqts8.png")
+    Mouse.Action({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"DT","parentid":"trip"}]},"left","click",10000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"bSetForeground":true,"sCursorPosition":"TopLeft","iCursorOffsetX":0,"iCursorOffsetY":0,"sKeyModifiers":[],"sSimulate":"simulate"})
+    //日期
+    #icon("@res:nim2onst-h4e2-0tsf-lkp5-00lldtkd3g0k.png")
+    UiElement.SetValue({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"INPUT","id":"depDt"}]},tomorrow,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200})
+    #icon("@res:27teoog7-pq3d-rutc-goka-eck2eoniqts8.png")
+    Mouse.Action({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"DT","parentid":"trip"}]},"left","click",10000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"bSetForeground":true,"sCursorPosition":"TopLeft","iCursorOffsetX":0,"iCursorOffsetY":0,"sKeyModifiers":[],"sSimulate":"simulate"})
+
+    //查询按钮
+    #icon("@res:u3as2v1d-ogo0-7a1u-rfc4-npqt61s8c0i6.png")
+    Mouse.Action({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"MARK","parentid":"btn_flight_search"}]},"left","click",10000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"bSetForeground":true,"sCursorPosition":"Center","iCursorOffsetX":0,"iCursorOffsetY":0,"sKeyModifiers":[],"sSimulate":"simulate"})
+
+    低价日历 = '{"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"FIGCAPTION","parentid":"flight-departure"}]}'
+    判断元素是否加载完成(低价日历)
+    Delay(2000)    
+    //按价格排序
+    #icon("@res:459a91k3-fupf-b6lc-t97v-uaej2ed6h2le.png")
+    Mouse.Action({"wnd":[{"cls":"Chrome_WidgetWin_1","title":"*","app":"chrome"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}],"html":[{"tag":"LI","parentid":"sylvanas_*","idx":3}]},"left","click",10000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"bSetForeground":true,"sCursorPosition":"Center","iCursorOffsetX":0,"iCursorOffsetY":0,"sKeyModifiers":[],"sSimulate":"simulate"})
+    Log.Info(Time.Format(Time.Now(),time_format)&" ：开始采集东方航空的航班信息...")
+    Dialog.Notify("开始采集东方航空的航班信息...", "提示", "0")
+    Delay(2000)
+    //数据抓取
+    ary_data = UiElement.DataScrap({"html":[{"id":"sylvanas_*","tag":"DIV"}],"wnd":[{"app":"chrome","cls":"Chrome_WidgetWin_1","title":"*"},{"cls":"Chrome_RenderWidgetHostHWND","title":"Chrome Legacy Window"}]},{"Columns":[{"props":["text"],"selecors":[{"index":0,"prefix":"","tag":"article","value":"article"},{"className":"summary","index":0,"prefix":">","tag":"section","value":"section.summary"},{"className":"title","index":0,"prefix":">","tag":"div","value":"div.title"}]},{"props":["text"],"selecors":[{"index":0,"prefix":"","tag":"article","value":"article"},{"className":"detail","index":0,"prefix":">","tag":"section","value":"section.detail"},{"className":"head cols-3","index":0,"prefix":">","tag":"dl","value":"dl.head.cols-3"},{"index":0,"prefix":">","tag":"dd","value":"dd"}]},{"props":["text"],"selecors":[{"index":0,"prefix":"","tag":"article","value":"article"},{"className":"summary","index":0,"prefix":">","tag":"section","value":"section.summary"},{"className":"info clearfix","index":0,"prefix":">","tag":"div","value":"div.info.clearfix"}]}],"ExtractTable":0},{"objNextLinkElement":"","iMaxNumberOfPage":5,"iMaxNumberOfResult":-1,"iDelayBetweenMS":1000,"bContinueOnError":false})
+    //TracePrint ary_data
+    //App.Kill("chrome.exe")
+    row_num =Excel.GetRowsCount(objExcelWorkBook,0)
+
+    For i=0 To UBound(ary_data)
+        //TracePrint "第"&i+1&"班："
+        data_ary_0 = Split(ary_data[i][0],"|")
+        data_ary_2 = Split(ary_data[i][2],"\n")
+        航空公司 = data_ary_0[0]
+        航班号 = data_ary_0[1]
+        价格 = ary_data[i][1]
+        出发时间 = bind_time(data_ary_2[0],1)
+        出发机场 = data_ary_2[1]
+        当地天气 = 查询北京天气()
+        If UBound(data_ary_2) = 4
+            If data_ary_2[2] = "直达"
+                到达时间 = bind_time(data_ary_2[3],1)
+                到达机场 = data_ary_2[4]
+                //TracePrint "直达不+1"
+            End If
+        Elseif UBound(data_ary_2) = 5
+            If data_ary_2[2] = "直达"
+                到达时间 = bind_time(data_ary_2[3],2)
+                到达机场 = data_ary_2[5]
+                //TracePrint "直达且+1"
+            End If
+            If data_ary_2[3] = "经停" 
+                到达时间 = bind_time(data_ary_2[4],1)
+                到达机场 = data_ary_2[5]
+                //TracePrint "经停不+1"            
+            End If
+        End If  
+        //TracePrint "\n航空公司：南方航空\n航班号："&航班号&"\n价格："&价格&"\n出发时间："&出发时间&"\n出发机场："&出发机场&"\n到达时间："&到达时间&"\n到达机场："&到达机场&"\n当地天气："&当地天气
+        //填入excel
+        row_num = Excel.GetRowsCount(objExcelWorkBook,0)
+        Excel.WriteRow(objExcelWorkBook,0,"B"&row_num+1,[航空公司,航班号,出发时间,到达时间,价格,出发机场,到达机场,当地天气,用户名,密码],false)
+    Next
+    Excel.Save(objExcelWorkBook)
+End Function
+
+/*
+功能：通过天气接口查询目的地[北京]的天气
+出参：查询到的[weather]对象
+*/
+Function 查询北京天气()
+    sRet = HTTP.Get("http://www.weather.com.cn/data/cityinfo/101010100.html", {}, 60000)
+    objJSON = JSON.Parse(sret)
+    //TracePrint objjson["weatherinfo"]
+    weather = objjson["weatherinfo"]["weather"]&"，"&objjson["weatherinfo"]["temp1"]&" ~ "&objjson["weatherinfo"]["temp2"]
+    //TracePrint weather
+    Return weather
+End Function
+
+/*
+功能：通过传入的时间字符串和增加天数变量拼接所需格式的时间字符串
+入参：时间字符串,增加天数
+出参：返回拼接完的时间字符串
+*/
+//构造时间
+Function bind_time(time_str,day)
+        d_date = Time.Format(Time.DateAdd("d",day,Time.Now()),"yyyy年mm月dd日")    //构造日期
+        date_time = d_date&" "&time_str   //拼接日期和时间
+        Return cstr(date_time)    //返回时间
+End Function
+
+/*
+功能：用于判断某元素是否加载完成，入未加载完成则等待，如果一定时间后还未找到就退出程序并提示
+入参：需要判断的元素
+*/
+Function 判断元素是否加载完成(元素)
+    //循环5次判断信息是否加载完成
+    For i=1 To 5
+        i = i + 1
+        //判断低价日历元素是否存在
+        #icon("@res:vueh7dsa-d3e5-p1ro-qb95-rql5sjb7m7k4.png")
+        is_elmt_exists = UiElement.Exists(元素,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200})
+        //如果不存在则等待500毫秒，存在则退出当前循环
+        If is_elmt_exists = false
+            Delay(500)
+        Else
+            Break
+        End If
+    Next
+    //判断5次后再次判断低价日历元素是否存在，如还不存在则提示并退出程序
+    #icon("@res:vueh7dsa-d3e5-p1ro-qb95-rql5sjb7m7k4.png")
+    is_elmt_exists = UiElement.Exists(元素,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200})
+    If is_elmt_exists = false
+        iRet = Dialog.MsgBox("请检查您的网络！！！","提示","0","1",0)
+        Exit
+    End If
+End Function
+
+/*
+功能：用于处理Excel数据及格式
+入参：待处理的Excel对象
+*/
+Function Excel处理(objExcelWorkBook)
+    row_num = Excel.GetRowsCount(objExcelWorkBook,0)
+    //复制格式
+    Excel.SelectRange(objExcelWorkBook,0,"2:2")
+    Keyboard.Press("C", "press", ['Ctrl'],{"iDelayAfter":300,"iDelayBefore":200,"sSimulate":"simulate"})
+    Excel.SelectRange(objExcelWorkBook,0,"3:"&row_num)
+    Keyboard.Press("H", "press", ['Alt'],{"iDelayAfter":300,"iDelayBefore":200,"sSimulate":"simulate"})
+    Keyboard.Press("V", "press", [],{"iDelayAfter":300,"iDelayBefore":200,"sSimulate":"simulate"})
+    Keyboard.Press("R", "press", [],{"iDelayAfter":300,"iDelayBefore":200,"sSimulate":"simulate"})
+    //删除第一行数据
+    Excel.DeleteRow(objExcelWorkBook,0,"2:2",false)
+    //序号
+    row_num_new = Excel.GetRowsCount(objExcelWorkBook,0)
+    Dim index = 1
+    For i=2 To row_num_new step 1
+        Excel.WriteCell(objExcelWorkBook,0,"A"&i,index,false)
+        index = index +1
+    Next
+End Function
+
+
+
+//主功能区
+
+Try
+    App.Kill("Excel.exe")   //结束excel
+    App.Kill("Chrome.exe")  //结束chrome
+    objExcelWorkBook = Excel.OpenExcel(@res"飞机票查询练习项目输出模板.xlsx",true)  //打开shu'chu
+    #icon("@res:4udtl1hv-m6sq-pl5t-p8dn-euecv8f1m88p.png")
+    Window.Show({"wnd":[{"cls":"XLMAIN","title":"*","app":"EXCEL"}]},"max") //设置改excel的显示状态为最大化
+    Excel.DeleteRow(objExcelWorkBook,0,"3:1000",false)  //清除原数据
+    hWeb = WebBrowser.Create("chrome","www.baidu.com",30000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"sBrowserPath":"","sStartArgs":""})  //打开一个chrome浏览器
+    查询南方航空(hWeb,objExcelWorkBook) //调用函数查询南方航空的信息
+    查询东方航空(hWeb,objExcelWorkBook) //调用函数查询东方航空的信息
+    App.Kill("Chrome.exe")  //结束chrome
+    Excel处理(objExcelWorkBook) //调用函数excel处理
+    Excel.Save(objExcelWorkBook)    //保存excel
+    //bRet = Mail.Send("smtp.qq.com","1286800997@qq.com","nlfdoeeikscfggib ","1286800997@qq.com","高磊磊","Dear 来也 高磊磊_17610158976 程序运行结果，请查阅。",@res"飞机票查询练习项目输出模板.xlsx",465,true,"")
+
+Catch a
+    TracePrint a
+    App.Kill("Excel.exe")   //结束excel
+    App.Kill("Chrome.exe")  //结束chrome
+    //except = 处理异常数据(a)
+    //TracePrint "流程名称："&except["流程名称"]&"\n异常流程快名："&except["异常流程快名"]&"\n异常代码行号："&except["异常代码行号"]&"\n异常报错信息："&except["异常代码行号"]
+
+End Try
+
+Return objExcelWorkBook //返回已打开的excel对象
+
+

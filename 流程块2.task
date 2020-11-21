@@ -1,0 +1,9 @@
+Try
+    #icon("@res:v3k356f7-3b8c-rab8-5ner-o4m3mml04ojn.png")
+    Mouse.Action({"wnd":[{"app":"Clover","cls":"Clover_WidgetWin_0","title":"E:\\UiBot WorkSpace - Clover"}],"ctrl":[{"role":"ROLE_SYSTEM_CLIENT","name":"Clover"},{"role":"ROLE_SYSTEM_PUSHBUTTON","name":"新标签页"}]},"left","click",2000,{"bContinueOnError":false,"iDelayAfter":300,"iDelayBefore":200,"bSetForeground":true,"sCursorPosition":"Center","iCursorOffsetX":0,"iCursorOffsetY":0,"sKeyModifiers":[],"sSimulate":"simulate"})
+Catch a
+    TracePrint a
+    TracePrint a["File"]&"\n"&a["Line"]
+End Try
+
+

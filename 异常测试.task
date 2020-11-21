@@ -1,0 +1,20 @@
+dim sRet = ""
+
+Try
+    sRet = Dialog.InputBox("","UiBot","",false)
+    TracePrint sret*1
+Catch e
+    TracePrint e
+    exception_dict = {}
+    ary = Split(e,":")
+    exception_dict["流程名称"] = "高级测试代码_V5.1.2版"
+    exception_dict["异常流程块名"] = ary[0] 
+    exception_dict["异常行号"] = ary[1] 
+    exception_dict["异常报错信息"] = ary[2] 
+    TracePrint "流程名称："&exception_dict["流程名称"]
+    TracePrint "异常流程块名："&exception_dict["异常流程块名"]
+    TracePrint "异常行号："&exception_dict["异常行号"]
+    TracePrint "异常报错信息："&exception_dict["异常报错信息"]
+
+End Try
+

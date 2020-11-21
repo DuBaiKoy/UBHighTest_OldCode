@@ -1,0 +1,42 @@
+/*
+作者：独白KOY
+时间：2020-08-24
+本流程用于将UiBot Commander中的数据保存到本地的Excel中
+*/
+
+Dim data_ary = [] //用于存放数组数据
+Dim json_data = {} //用于存放json数据
+Dim excel_data = {} //用于存放Excel中的数据
+Dim row_data = {} //用于存放行级数据
+Dim data_dict = {} //用于存放字典数据
+Dim obj_excel = '' //表格文件对象
+Dim row_num = '' //行数
+Dim column_num = '' //列数
+
+App.Kill("Excel.exe")
+//打开本地的Excel文件
+obj_excel = Excel.OpenExcel(@res"配置文件.xlsx",true)
+//获取行数、列数
+row_num = Excel.GetRowsCount(obj_excel,0)
+column_num = Excel.GetColumsCount(obj_excel,0)
+//获取excel中的数据
+excel_data = Excel.ReadRange(obj_excel,0,[[1,1],[row_num,column_num]])
+//关闭excel
+Excel.CloseExcel(obj_excel,true)
+
+//遍历读取excel_data每行的数据保存为字典，并添加到数组中
+For Each row_data In excel_data
+    data_dict = {row_data[0] : row_data[1] }
+    data_ary = push(data_ary,data_dict)
+Next
+
+//遍历data_ary,将其数据转换为json格式
+For Each value In data_ary
+    For Each k,v In value
+        json_data[K] = v
+    Next
+Next
+
+Return json_data
+
+
